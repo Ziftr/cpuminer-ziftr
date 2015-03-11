@@ -114,7 +114,7 @@ int scanhash_ziftr(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 	uint32_t hash[16] __attribute__((aligned(64)));
 	uint32_t tmpdata[20] __attribute__((aligned(64)));
 
-	const uint32_t version = pdata[0] & (~POK_DATA_MASK);
+    const uint32_t version = pdata[0] & (~POK_DATA_MASK);
 	const uint32_t first_nonce = pdata[19];
 	uint32_t nonce = first_nonce;
  
@@ -136,7 +136,8 @@ int scanhash_ziftr(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
 			*hashes_done = pdata[19] - first_nonce + 1;
 			if (opt_debug)
 				applog(LOG_INFO, "found nonce %x", nonce);
-			return 1;
+
+            return 1;
 		}
 		nonce++;
  

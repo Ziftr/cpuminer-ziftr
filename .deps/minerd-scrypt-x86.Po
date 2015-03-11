@@ -1,0 +1,3 @@
+minerd-scrypt-x86.o: scrypt-x86.S cpuminer-config.h
+
+cpuminer-config.h:

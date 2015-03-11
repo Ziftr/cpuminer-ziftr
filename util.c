@@ -889,6 +889,7 @@ start:
 	if (opt_debug && !sid)
 		applog(LOG_DEBUG, "Failed to get Stratum session id");
 	xnonce1 = json_string_value(json_array_get(res_val, 1));
+	if (opt_debug) printf("xnonce1: %s\n", xnonce1);
 	if (!xnonce1) {
 		applog(LOG_ERR, "Failed to get extranonce1");
 		goto out;
@@ -989,16 +990,31 @@ static bool stratum_notify(struct stratum_ctx *sctx, json_t *params)
 	unsigned char **merkle;
 
 	job_id = json_string_value(json_array_get(params, 0));
+	if (opt_debug) printf("job_id  :   %s\n", job_id);
+
 	prevhash = json_string_value(json_array_get(params, 1));
+	if (opt_debug) printf("prevhash:   %s\n", prevhash);
+
 	coinb1 = json_string_value(json_array_get(params, 2));
+	if (opt_debug) printf("coinb1  :   %s\n", coinb1);
+
 	coinb2 = json_string_value(json_array_get(params, 3));
+	if (opt_debug) printf("coinb2  :   %s\n", coinb2);
+	
 	merkle_arr = json_array_get(params, 4);
 	if (!merkle_arr || !json_is_array(merkle_arr))
 		goto out;
 	merkle_count = json_array_size(merkle_arr);
+	
 	version = json_string_value(json_array_get(params, 5));
+	if (opt_debug) printf("version :   %s\n", version);
+
 	nbits = json_string_value(json_array_get(params, 6));
+	if (opt_debug) printf("nbits   :   %s\n", nbits);
+
 	ntime = json_string_value(json_array_get(params, 7));
+	if (opt_debug) printf("ntime   :   %s\n", ntime);
+
 	clean = json_is_true(json_array_get(params, 8));
 
 	if (!job_id || !prevhash || !coinb1 || !coinb2 || !version || !nbits || !ntime ||
@@ -1035,9 +1051,20 @@ static bool stratum_notify(struct stratum_ctx *sctx, json_t *params)
 		memset(sctx->job.xnonce2, 0, sctx->xnonce2_size);
 	hex2bin(sctx->job.xnonce2 + sctx->xnonce2_size, coinb2, coinb2_size);
 
+	char * coinbase_str;
+    coinbase_str = bin2hex((unsigned char *)sctx->job.coinbase, sctx->job.coinbase_size);
+    if (opt_debug) printf("coinbase_str _here_:   %s\n", coinbase_str);
+    free(coinbase_str);
+
 	free(sctx->job.job_id);
 	sctx->job.job_id = strdup(job_id);
 	hex2bin(sctx->job.prevhash, prevhash, 32);
+
+	// TODO delete me
+	char * prevhash_str;
+    prevhash_str = bin2hex((unsigned char *)sctx->job.prevhash, 32);
+    if (opt_debug) printf("prev hash after decoding:   %s\n", prevhash_str);
+    free(prevhash_str);
 
 	for (i = 0; i < sctx->job.merkle_count; i++)
 		free(sctx->job.merkle[i]);

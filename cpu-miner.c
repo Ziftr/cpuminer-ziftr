@@ -104,7 +104,7 @@ struct workio_cmd {
 enum sha256_algos {
 	ALGO_SCRYPT,		/* scrypt(1024,1,1) */
 	ALGO_SHA256D,		/* SHA-256d */
-	ALGO_ZIFTR,
+	ALGO_ZIFTR
 };
 
 static const char *algo_names[] = {
@@ -248,7 +248,10 @@ static struct option const options[] = {
 };
 
 struct work {
-	uint32_t data[20];
+	// uint32_t data[20];
+	uint32_t data[32];
+	// uint32_t data[20];
+	// uint32_t data2[12];
 	uint32_t target[8];
 
 	char job_id[128];
@@ -286,7 +289,10 @@ static bool work_decode(const json_t *val, struct work *work)
 {
 	int i;
 	
-	if (unlikely(!jobj_binary(val, "data", work->data, sizeof(work->data)))) {
+	// Note changed this to 80 because the pools that are up don't pre-format the hash buffer for you,
+	// instead just give the 80 block header
+	// sizeof(work->data)
+	if (unlikely(!jobj_binary(val, "data", work->data, 80))) {
 		applog(LOG_ERR, "JSON inval data");
 		goto err_out;
 	}
@@ -366,8 +372,8 @@ static bool submit_upstream_work(CURL *curl, struct work *work)
 
 		if (!work->job_id)
 			return true;
-		le32enc(&ntime, work->data[17]);
-		le32enc(&nonce, work->data[19]);
+		be32enc(&ntime, work->data[17]);
+		be32enc(&nonce, work->data[19]);
 		ntimestr = bin2hex((const unsigned char *)(&ntime), 4);
 		noncestr = bin2hex((const unsigned char *)(&nonce), 4);
 		xnonce2str = bin2hex(work->xnonce2, work->xnonce2_len);
@@ -386,7 +392,7 @@ static bool submit_upstream_work(CURL *curl, struct work *work)
 		/* build hex string */
 		for (i = 0; i < ARRAY_SIZE(work->data); i++)
 			le32enc(work->data + i, work->data[i]);
-		str = bin2hex((unsigned char *)work->data, sizeof(work->data));
+		str = bin2hex((unsigned char *)work->data, 80); // sizeof(work->data)
 		if (unlikely(!str)) {
 			applog(LOG_ERR, "submit_upstream_work OOM");
 			goto out;
@@ -647,24 +653,38 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 	memcpy(work->xnonce2, sctx->job.xnonce2, sctx->xnonce2_size);
 
 	/* Generate merkle root */
-	SHA256((unsigned char*)sctx->job.coinbase, sctx->job.coinbase_size, (unsigned char*)merkle_root);
+	sha256d(merkle_root, sctx->job.coinbase, sctx->job.coinbase_size);
 	for (i = 0; i < sctx->job.merkle_count; i++) {
 		memcpy(merkle_root + 32, sctx->job.merkle[i], 32);
 		sha256d(merkle_root, merkle_root, 64);
 	}
+
+	// char * merkle_root_str;
+	// merkle_root_str = bin2hex((unsigned char *)merkle_root, 32);
+ 	// printf("merkle_root_str _here_:   %s\n", merkle_root_str);
+ 	// free(merkle_root_str);
 	
 	/* Increment extranonce2 */
 	for (i = 0; i < sctx->xnonce2_size && !++sctx->job.xnonce2[i]; i++);
 
 	/* Assemble block header */
 	memset(work->data, 0, 128);
-	work->data[0] = le32dec(sctx->job.version);
+
+	// work->data[0] = le32dec(sctx->job.version);
+	// for (i = 0; i < 8; i++)
+	// 	work->data[1 + i] = le32dec((uint32_t *)sctx->job.prevhash + i);
+	// for (i = 0; i < 8; i++)
+	// 	work->data[9 + i] = be32dec((uint32_t *)merkle_root + i);
+	// work->data[17] = le32dec(sctx->job.ntime);
+	// work->data[18] = le32dec(sctx->job.nbits);
+	work->data[0] = be32dec(sctx->job.version);
 	for (i = 0; i < 8; i++)
-		work->data[1 + i] = le32dec((uint32_t *)sctx->job.prevhash + i);
+		work->data[1 + i] = be32dec((uint32_t *)sctx->job.prevhash + i);
 	for (i = 0; i < 8; i++)
-		work->data[9 + i] = be32dec((uint32_t *)merkle_root + i);
-	work->data[17] = le32dec(sctx->job.ntime);
-	work->data[18] = le32dec(sctx->job.nbits);
+		work->data[9 + i] = le32dec((uint32_t *)merkle_root + i);
+	work->data[17] = be32dec(sctx->job.ntime);
+	work->data[18] = be32dec(sctx->job.nbits);
+
 	work->data[20] = 0x80000000;
 	work->data[31] = 0x00000280;
 
@@ -678,8 +698,6 @@ static void stratum_gen_work(struct stratum_ctx *sctx, struct work *work)
 	}
 
 	if (opt_algo == ALGO_SCRYPT)
-		diff_to_target(work->target, sctx->job.diff / 65536.0);
-        else if (opt_algo == ALGO_ZIFTR)
 		diff_to_target(work->target, sctx->job.diff / 65536.0);
 	else
 		diff_to_target(work->target, sctx->job.diff);
@@ -724,12 +742,17 @@ static void *miner_thread(void *userdata)
 		int64_t max64;
 		int rc;
 
+
+
 		if (have_stratum) {
-			while (!*g_work.job_id || time(NULL) >= g_work_time + 120)
+			while (!*g_work.job_id || time(NULL) >= g_work_time + 120) {
 				sleep(1);
+			}
+				
 			pthread_mutex_lock(&g_work_lock);
-			if (work.data[19] >= end_nonce)
+			if (work.data[19] >= end_nonce) {
 				stratum_gen_work(&stratum, &g_work);
+			}
 		} else {
 			/* obtain new work from internal workio thread */
 			pthread_mutex_lock(&g_work_lock);
@@ -792,6 +815,14 @@ static void *miner_thread(void *userdata)
 		default:
 			/* should never happen */
 			goto out;
+		}
+
+		if (rc && opt_hashdebug)
+		{
+            char * header_str;
+            header_str = bin2hex((unsigned char *)work.data, 80);
+            applog(LOG_DEBUG, "DEBUG: \nData:   %s", header_str);
+            free(header_str);
 		}
 
 		/* record scanhash elapsed time */
@@ -993,7 +1024,8 @@ static void *stratum_thread(void *userdata)
 		}
 
 		if (stratum.job.job_id &&
-		    (strcmp(stratum.job.job_id, g_work.job_id) || !g_work_time)) {
+		    (strcmp(stratum.job.job_id, g_work.job_id) || !g_work_time)) 
+		{
 			pthread_mutex_lock(&g_work_lock);
 			stratum_gen_work(&stratum, &g_work);
 			time(&g_work_time);
@@ -1014,8 +1046,10 @@ static void *stratum_thread(void *userdata)
 			applog(LOG_ERR, "Stratum connection interrupted");
 			continue;
 		}
+
 		if (!stratum_handle_method(&stratum, s))
 			stratum_handle_response(s);
+
 		free(s);
 	}
 

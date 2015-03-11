@@ -1,0 +1,5 @@
+minerd
+*.o
+autom4te.cache/*
+*.orig
+
