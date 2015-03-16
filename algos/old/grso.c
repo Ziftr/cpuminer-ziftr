@@ -60,7 +60,7 @@ do { \
 /* hash = groestl512(loaded) */
 #define GRS_C \
 do { \
-    char *out = hash; \
+    char * out = (char *)hash; \
   int i, j = 0; \
   unsigned char *s = (unsigned char*)sts_grs.grsstate; \
  \

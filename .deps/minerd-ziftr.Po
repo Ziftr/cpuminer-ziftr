@@ -80,7 +80,13 @@ minerd-ziftr.o: ziftr.c cpuminer-config.h miner.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /usr/include/syslog.h /usr/include/sys/syslog.h /usr/include/string.h \
   /usr/include/strings.h /usr/include/secure/_string.h sph_keccak.h \
-  sph_types.h sph_blake.h sph_groestl.h sph_jh.h sph_skein.h
+  sph_types.h algos/blake.c algos/sph_blake.h algos/sph_types.h \
+  sph_groestl.h algos/jh_sse2_opt64.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/emmintrin.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/xmmintrin.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/mmintrin.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/mm_malloc.h \
+  algos/skein.c algos/sph_skein.h
 
 cpuminer-config.h:
 
@@ -364,10 +370,24 @@ sph_keccak.h:
 
 sph_types.h:
 
-sph_blake.h:
+algos/blake.c:
+
+algos/sph_blake.h:
+
+algos/sph_types.h:
 
 sph_groestl.h:
 
-sph_jh.h:
+algos/jh_sse2_opt64.h:
 
-sph_skein.h:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/emmintrin.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/xmmintrin.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/mmintrin.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/mm_malloc.h:
+
+algos/skein.c:
+
+algos/sph_skein.h:

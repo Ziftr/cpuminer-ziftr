@@ -439,8 +439,8 @@ gives unlimited permission to copy, distribute and modify it."
 
 ac_pwd='/Users/stephenmorse/Documents/GitHub/cpuminer-ziftr'
 srcdir='.'
-INSTALL='/usr/bin/install -c'
-MKDIR_P='./install-sh -c -d'
+INSTALL='/usr/local/bin/ginstall -c'
+MKDIR_P='/usr/local/bin/gmkdir -p'
 AWK='awk'
 test -n "$AWK" || AWK=awk
 # The default lists apply if the user does not specify any file.
@@ -676,7 +676,7 @@ S["am__leading_dot"]="."
 S["SET_MAKE"]=""
 S["AWK"]="awk"
 S["mkdir_p"]="$(MKDIR_P)"
-S["MKDIR_P"]="./install-sh -c -d"
+S["MKDIR_P"]="/usr/local/bin/gmkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]=""
 S["install_sh"]="${SHELL} /Users/stephenmorse/Documents/GitHub/cpuminer-ziftr/install-sh"

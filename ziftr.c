@@ -1,6 +1,36 @@
 /*
+ * Copyright 2014 mkimid
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ */
+ /*
 ***** ZiftrCOIN Hashing Algo Module  by ocminer (admin at suprnova.cc)  ******
 */
+/*
+ * Further modified by Stephen Morse and Justin Wilcox
+ */
 
 #include "cpuminer-config.h"
 #include "miner.h"
@@ -8,11 +38,11 @@
 #include <string.h>
 #include <stdint.h>
 
-#define USE_SPH_KECCAK 1 // Don't uncomment this unless fixed for 80 byte input
-#define USE_SPH_BLAKE 1  // Don't uncomment this unless fixed for 64 byte input
-#define USE_SPH_GROESTL 1
-#define USE_SPH_JH 1
-#define USE_SPH_SKEIN 1
+#define USE_SPH_KECCAK 1  // Don't comment this out unless fixed for 80 byte input
+// #define USE_SPH_BLAKE 1   // Works
+#define USE_SPH_GROESTL 1 // Works on windows
+// #define USE_SPH_JH 1      // Works
+// #define USE_SPH_SKEIN 1   // Works
 
 #ifdef USE_SPH_KECCAK
 #include "sph_keccak.h"
@@ -124,6 +154,7 @@ static void ziftrhash(void *state, const void *input)
     sph_keccak512 (&ctx_keccak, input, 80);
     sph_keccak512_close(&ctx_keccak, (&hash));
 #else
+{
     // I believe this is optimized for 64 length input,
     // so probably won't work for zrc, since we use
     // input of length 80 here
@@ -131,6 +162,7 @@ static void ziftrhash(void *state, const void *input)
     KEC_I;
     KEC_U;
     KEC_C;
+}
 #endif
 
     unsigned int nOrder = *(unsigned int *)(&hash) % 24;
@@ -148,10 +180,12 @@ static void ziftrhash(void *state, const void *input)
             sph_blake512 (&ctx_blake, (&hash), 64);
             sph_blake512_close(&ctx_blake, (&hash));
 #else
+        {
             DECL_BLK;
             BLK_I;
-            BLK_W;
+            BLK_U;
             BLK_C;
+        }
 #endif
             break;
 
@@ -161,9 +195,11 @@ static void ziftrhash(void *state, const void *input)
             sph_groestl512 (&ctx_groestl, (&hash), 64);
             sph_groestl512_close(&ctx_groestl, (&hash));
 #else
+        {
             GRS_I; // init
             GRS_U; // update
             GRS_C; // close
+        }
 #endif
             break;
 
@@ -173,8 +209,10 @@ static void ziftrhash(void *state, const void *input)
             sph_jh512 (&ctx_jh, (&hash), 64);
             sph_jh512_close(&ctx_jh, (&hash));
 #else
+        {
             DECL_JH;
             JH_H;
+        }
 #endif
 
             break;
@@ -184,10 +222,12 @@ static void ziftrhash(void *state, const void *input)
             sph_skein512 (&ctx_skein, (&hash), 64);
             sph_skein512_close(&ctx_skein, (&hash));
 #else
+        {
             DECL_SKN;
             SKN_I;
             SKN_U;
             SKN_C;
+        }
 #endif
             break;
         default:
@@ -195,6 +235,9 @@ static void ziftrhash(void *state, const void *input)
         }
     }
 
+#ifndef USE_SPH_GROESTL
+    asm volatile ("emms");
+#endif
 	memcpy(state, hash, 32);
 }
 

@@ -30,8 +30,8 @@ Kernel configured for up to 4 processors.
 Processor type: x86_64h (Intel x86-64h Haswell)
 Processors active: 0 1 2 3
 Primary memory available: 8.00 gigabytes
-Default processor set: 268 tasks, 1289 threads, 4 processors
-Load average: 1.60, Mach factor: 2.42
+Default processor set: 280 tasks, 1335 threads, 4 processors
+Load average: 1.15, Mach factor: 2.84
 /bin/machine           = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
@@ -58,12 +58,12 @@ configure:2374: result: x86_64-apple-darwin14.1.0
 configure:2394: checking target system type
 configure:2407: result: x86_64-apple-darwin14.1.0
 configure:2451: checking for a BSD-compatible install
-configure:2519: result: /usr/bin/install -c
+configure:2519: result: /usr/local/bin/ginstall -c
 configure:2530: checking whether build environment is sane
 configure:2585: result: yes
 configure:2623: WARNING: 'missing' script is too old or missing
 configure:2736: checking for a thread-safe mkdir -p
-configure:2775: result: ./install-sh -c -d
+configure:2775: result: /usr/local/bin/gmkdir -p
 configure:2782: checking for gawk
 configure:2812: result: no
 configure:2782: checking for mawk
@@ -931,7 +931,8 @@ ac_cv_objext=o
 ac_cv_path_EGREP='/usr/bin/grep -E'
 ac_cv_path_GREP=/usr/bin/grep
 ac_cv_path__libcurl_config=/usr/bin/curl-config
-ac_cv_path_install='/usr/bin/install -c'
+ac_cv_path_install='/usr/local/bin/ginstall -c'
+ac_cv_path_mkdir=/usr/local/bin/gmkdir
 ac_cv_prog_AWK=awk
 ac_cv_prog_CPP='gcc -E'
 ac_cv_prog_ac_ct_CC=gcc
@@ -1008,7 +1009,7 @@ MAINT='#'
 MAINTAINER_MODE_FALSE=''
 MAINTAINER_MODE_TRUE='#'
 MAKEINFO='makeinfo'
-MKDIR_P='./install-sh -c -d'
+MKDIR_P='/usr/local/bin/gmkdir -p'
 OBJEXT='o'
 PACKAGE='cpuminer'
 PACKAGE_BUGREPORT=''
