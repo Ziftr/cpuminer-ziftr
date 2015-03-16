@@ -30,8 +30,8 @@ Kernel configured for up to 4 processors.
 Processor type: x86_64h (Intel x86-64h Haswell)
 Processors active: 0 1 2 3
 Primary memory available: 8.00 gigabytes
-Default processor set: 213 tasks, 884 threads, 4 processors
-Load average: 4.37, Mach factor: 0.91
+Default processor set: 268 tasks, 1289 threads, 4 processors
+Load average: 1.60, Mach factor: 2.42
 /bin/machine           = unknown
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
@@ -86,14 +86,14 @@ configure:3168: found /usr/bin/gcc
 configure:3179: result: gcc
 configure:3408: checking for C compiler version
 configure:3417: gcc --version >&5
-Apple LLVM version 6.0 (clang-600.0.56) (based on LLVM 3.5svn)
+Apple LLVM version 6.0 (clang-600.0.57) (based on LLVM 3.5svn)
 Target: x86_64-apple-darwin14.1.0
 Thread model: posix
 Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
 configure:3428: $? = 0
 configure:3417: gcc -v >&5
 Configured with: --prefix=/Applications/Xcode.app/Contents/Developer/usr --with-gxx-include-dir=/usr/include/c++/4.2.1
-Apple LLVM version 6.0 (clang-600.0.56) (based on LLVM 3.5svn)
+Apple LLVM version 6.0 (clang-600.0.57) (based on LLVM 3.5svn)
 Target: x86_64-apple-darwin14.1.0
 Thread model: posix
 configure:3428: $? = 0

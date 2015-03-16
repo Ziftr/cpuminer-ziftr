@@ -360,6 +360,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @WANT_JANSSON_FALSE@JANSSON_INCLUDES = 
 @WANT_JANSSON_TRUE@JANSSON_INCLUDES = -I$(top_srcdir)/compat/jansson
+ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = example-cfg.json nomacro.pl
 SUBDIRS = compat
 INCLUDES = $(PTHREAD_FLAGS) -fno-strict-aliasing $(JANSSON_INCLUDES)

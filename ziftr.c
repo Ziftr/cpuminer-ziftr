@@ -9,7 +9,13 @@
 #include <stdint.h>
 
 #include "sph_blake.h"
-#include "sph_groestl.h"
+
+// #include "sph_groestl.h"
+#include "grso.c"
+// #ifndef PROFILERUN
+#include "grso-asm.c"
+// #endif
+
 #include "sph_jh.h"
 #include "sph_keccak.h"
 #include "sph_skein.h"
@@ -22,49 +28,57 @@
 #define POK_BOOL_MASK 0x00008000
 #define POK_DATA_MASK 0xFFFF0000
 
+#if defined(__GNUC__)
+      #define DATA_ALIGN16(x) x __attribute__ ((aligned(16)))
+#else
+      #define DATA_ALIGN16(x) __declspec(align(16)) x
+#endif
+
+// Pre-computed table of permutations
+static const int arrOrder[][4] =
+{
+    {0, 1, 2, 3},
+    {0, 1, 3, 2},
+    {0, 2, 1, 3},
+    {0, 2, 3, 1},
+    {0, 3, 1, 2},
+    {0, 3, 2, 1},
+    {1, 0, 2, 3},
+    {1, 0, 3, 2},
+    {1, 2, 0, 3},
+    {1, 2, 3, 0},
+    {1, 3, 0, 2},
+    {1, 3, 2, 0},
+    {2, 0, 1, 3},
+    {2, 0, 3, 1},
+    {2, 1, 0, 3},
+    {2, 1, 3, 0},
+    {2, 3, 0, 1},
+    {2, 3, 1, 0},
+    {3, 0, 1, 2},
+    {3, 0, 2, 1},
+    {3, 1, 0, 2},
+    {3, 1, 2, 0},
+    {3, 2, 0, 1},
+    {3, 2, 1, 0}
+};
+
 static void ziftrhash(void *state, const void *input)
 {
+    DATA_ALIGN16(unsigned char hashbuf[128]);
+    DATA_ALIGN16(uint32_t hash[32]);
 
     sph_blake512_context     ctx_blake;
-    sph_groestl512_context   ctx_groestl;
+    
+    // sph_groestl512_context   ctx_groestl;
+    grsoState sts_grs;
+
     sph_jh512_context        ctx_jh;
     sph_keccak512_context    ctx_keccak;
     sph_skein512_context     ctx_skein;
 
     static unsigned char pblank[1];
     pblank[0] = 0;
-
-    // Pre-computed table of permutations
-    static const int arrOrder[][4] =
-    {
-        {0, 1, 2, 3},
-        {0, 1, 3, 2},
-        {0, 2, 1, 3},
-        {0, 2, 3, 1},
-        {0, 3, 1, 2},
-        {0, 3, 2, 1},
-        {1, 0, 2, 3},
-        {1, 0, 3, 2},
-        {1, 2, 0, 3},
-        {1, 2, 3, 0},
-        {1, 3, 0, 2},
-        {1, 3, 2, 0},
-        {2, 0, 1, 3},
-        {2, 0, 3, 1},
-        {2, 1, 0, 3},
-        {2, 1, 3, 0},
-        {2, 3, 0, 1},
-        {2, 3, 1, 0},
-        {3, 0, 1, 2},
-        {3, 0, 2, 1},
-        {3, 1, 0, 2},
-        {3, 1, 2, 0},
-        {3, 2, 0, 1},
-        {3, 2, 1, 0}
-    };
-
-
-    uint32_t hash[32];
 
     sph_keccak512_init(&ctx_keccak);
     sph_keccak512 (&ctx_keccak, input, 80);
@@ -85,9 +99,12 @@ static void ziftrhash(void *state, const void *input)
             sph_blake512_close(&ctx_blake, (&hash));
             break;
         case 1:
-            sph_groestl512_init(&ctx_groestl);
-            sph_groestl512 (&ctx_groestl, (&hash), 64);
-            sph_groestl512_close(&ctx_groestl, (&hash));
+            // sph_groestl512_init(&ctx_groestl);
+            // sph_groestl512 (&ctx_groestl, (&hash), 64);
+            // sph_groestl512_close(&ctx_groestl, (&hash));
+            GRS_I;
+            GRS_U;
+            GRS_C;
             break;
         case 2:
             sph_jh512_init(&ctx_jh);
