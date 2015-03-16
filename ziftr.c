@@ -8,22 +8,42 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "sph_blake.h"
+#define USE_SPH_KECCAK 1 // Don't uncomment this unless fixed for 80 byte input
+#define USE_SPH_BLAKE 1  // Don't uncomment this unless fixed for 64 byte input
+#define USE_SPH_GROESTL 1
+#define USE_SPH_JH 1
+#define USE_SPH_SKEIN 1
 
-// #include "sph_groestl.h"
-#include "grso.c"
-// #ifndef PROFILERUN
-#include "grso-asm.c"
-// #endif
-
-#include "sph_jh.h"
+#ifdef USE_SPH_KECCAK
 #include "sph_keccak.h"
-#include "sph_skein.h"
+#else
+#include "algos/keccak.c"
+#endif
 
-#define ZR_BLAKE   0
-#define ZR_GROESTL 1
-#define ZR_JH      2
-#define ZR_SKEIN   3
+#ifdef USE_SPH_BLAKE
+#include "sph_blake.h"
+#else
+#include "algos/blake.c"
+#endif
+
+#ifdef USE_SPH_GROESTL
+#include "sph_groestl.h"
+#else
+#include "algos/grso.c"
+#include "algos/grso-asm.c"
+#endif
+
+#ifdef USE_SPH_JH
+#include "sph_jh.h"
+#else
+#include "algos/jh_sse2_opt64.h"
+#endif
+
+#ifdef USE_SPH_SKEIN
+#include "sph_skein.h"
+#else
+#include "algos/skein.c"
+#endif
  
 #define POK_BOOL_MASK 0x00008000
 #define POK_DATA_MASK 0xFFFF0000
@@ -66,23 +86,52 @@ static const int arrOrder[][4] =
 static void ziftrhash(void *state, const void *input)
 {
     DATA_ALIGN16(unsigned char hashbuf[128]);
-    DATA_ALIGN16(uint32_t hash[32]);
+    DATA_ALIGN16(unsigned char hash[128]);
 
-    sph_blake512_context     ctx_blake;
-    
-    // sph_groestl512_context   ctx_groestl;
-    grsoState sts_grs;
+#if !defined(USE_SPH_BLAKE) || !defined(USE_SPH_SKEIN)
+    DATA_ALIGN16(size_t hashptr);
+    DATA_ALIGN16(sph_u64 hashctA);
+#endif
 
-    sph_jh512_context        ctx_jh;
+#if !defined(USE_SPH_BLAKE)
+    DATA_ALIGN16(sph_u64 hashctB);
+#endif
+
+#ifdef USE_SPH_KECCAK
     sph_keccak512_context    ctx_keccak;
+#endif
+
+#ifdef USE_SPH_BLAKE
+    sph_blake512_context     ctx_blake;
+#endif
+
+#ifdef USE_SPH_GROESTL
+    sph_groestl512_context   ctx_groestl;
+#else
+    grsoState sts_grs;
+#endif
+
+#ifdef USE_SPH_JH
+    sph_jh512_context        ctx_jh;
+#endif
+
+#ifdef USE_SPH_SKEIN
     sph_skein512_context     ctx_skein;
+#endif
 
-    static unsigned char pblank[1];
-    pblank[0] = 0;
-
+#ifdef USE_SPH_KECCAK
     sph_keccak512_init(&ctx_keccak);
     sph_keccak512 (&ctx_keccak, input, 80);
     sph_keccak512_close(&ctx_keccak, (&hash));
+#else
+    // I believe this is optimized for 64 length input,
+    // so probably won't work for zrc, since we use
+    // input of length 80 here
+    DECL_KEC;
+    KEC_I;
+    KEC_U;
+    KEC_C;
+#endif
 
     unsigned int nOrder = *(unsigned int *)(&hash) % 24;
 
@@ -94,27 +143,52 @@ static void ziftrhash(void *state, const void *input)
         switch (arrOrder[nOrder][i])
         {
         case 0:
+#ifdef USE_SPH_BLAKE
             sph_blake512_init(&ctx_blake);
             sph_blake512 (&ctx_blake, (&hash), 64);
             sph_blake512_close(&ctx_blake, (&hash));
+#else
+            DECL_BLK;
+            BLK_I;
+            BLK_W;
+            BLK_C;
+#endif
             break;
+
         case 1:
-            // sph_groestl512_init(&ctx_groestl);
-            // sph_groestl512 (&ctx_groestl, (&hash), 64);
-            // sph_groestl512_close(&ctx_groestl, (&hash));
-            GRS_I;
-            GRS_U;
-            GRS_C;
+#ifdef USE_SPH_GROESTL
+            sph_groestl512_init(&ctx_groestl);
+            sph_groestl512 (&ctx_groestl, (&hash), 64);
+            sph_groestl512_close(&ctx_groestl, (&hash));
+#else
+            GRS_I; // init
+            GRS_U; // update
+            GRS_C; // close
+#endif
             break;
+
         case 2:
+#ifdef USE_SPH_JH
             sph_jh512_init(&ctx_jh);
             sph_jh512 (&ctx_jh, (&hash), 64);
             sph_jh512_close(&ctx_jh, (&hash));
+#else
+            DECL_JH;
+            JH_H;
+#endif
+
             break;
         case 3:
+#ifdef USE_SPH_SKEIN
             sph_skein512_init(&ctx_skein);
             sph_skein512 (&ctx_skein, (&hash), 64);
             sph_skein512_close(&ctx_skein, (&hash));
+#else
+            DECL_SKN;
+            SKN_I;
+            SKN_U;
+            SKN_C;
+#endif
             break;
         default:
             break;

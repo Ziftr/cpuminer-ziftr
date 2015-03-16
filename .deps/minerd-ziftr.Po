@@ -79,9 +79,8 @@ minerd-ziftr.o: ziftr.c cpuminer-config.h miner.h \
   /usr/include/curl/multi.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/stddef.h \
   /usr/include/syslog.h /usr/include/sys/syslog.h /usr/include/string.h \
-  /usr/include/strings.h /usr/include/secure/_string.h sph_blake.h \
-  sph_types.h grso.c grso.h brg_endian.h brg_types.h grso-asm.h \
-  grsotab.h sph_jh.h sph_keccak.h sph_skein.h
+  /usr/include/strings.h /usr/include/secure/_string.h sph_keccak.h \
+  sph_types.h sph_blake.h sph_groestl.h sph_jh.h sph_skein.h
 
 cpuminer-config.h:
 
@@ -361,24 +360,14 @@ miner.h:
 
 /usr/include/secure/_string.h:
 
-sph_blake.h:
+sph_keccak.h:
 
 sph_types.h:
 
-grso.c:
+sph_blake.h:
 
-grso.h:
-
-brg_endian.h:
-
-brg_types.h:
-
-grso-asm.h:
-
-grsotab.h:
+sph_groestl.h:
 
 sph_jh.h:
-
-sph_keccak.h:
 
 sph_skein.h:

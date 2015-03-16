@@ -29,7 +29,7 @@ do { \
 /* load hash */
 #define GRS_U \
 do { \
-    unsigned char* in = (unsigned char *)hash; \
+    unsigned char* in = hash; \
   unsigned long long index = 0; \
  \
   /* if the buffer contains data that has not yet been digested, first \
@@ -60,7 +60,7 @@ do { \
 /* hash = groestl512(loaded) */
 #define GRS_C \
 do { \
-    char *out = (char *)hash; \
+    char * out = (char *)hash; \
   int i, j = 0; \
   unsigned char *s = (unsigned char*)sts_grs.grsstate; \
  \
