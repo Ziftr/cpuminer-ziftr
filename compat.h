@@ -5,10 +5,14 @@
 
 #include <windows.h>
 
+//when compiling using mingw this method is already declared in unistd.h
+//having it declared again of course breaks the compile, so we probably don't need to re-declare this anymore
+/**
 static inline void sleep(int secs)
 {
 	Sleep(secs * 1000);
 }
+**/
 
 enum {
 	PRIO_PROCESS		= 0,
