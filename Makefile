@@ -111,8 +111,8 @@ am_minerd_OBJECTS = minerd-cpu-miner.$(OBJEXT) minerd-util.$(OBJEXT) \
 	minerd-sha2-x86.$(OBJEXT) minerd-sha2-x64.$(OBJEXT) \
 	minerd-scrypt.$(OBJEXT) minerd-scrypt-arm.$(OBJEXT) \
 	minerd-scrypt-x86.$(OBJEXT) minerd-scrypt-x64.$(OBJEXT) \
-	minerd-blake.$(OBJEXT) minerd-groestl.$(OBJEXT) \
-	minerd-jh.$(OBJEXT) minerd-keccak.$(OBJEXT) \
+	minerd-keccak.$(OBJEXT) minerd-blake.$(OBJEXT) \
+	minerd-groestl.$(OBJEXT) minerd-jh.$(OBJEXT) \
 	minerd-skein.$(OBJEXT) minerd-ziftr.$(OBJEXT)
 minerd_OBJECTS = $(am_minerd_OBJECTS)
 minerd_DEPENDENCIES =
@@ -281,7 +281,7 @@ LDFLAGS =
 LIBCURL = -lcurl
 LIBCURL_CPPFLAGS = 
 LIBOBJS = 
-LIBS = -lcrypto -lssl 
+LIBS = 
 LTLIBOBJS = 
 MAINT = #
 MAKEINFO = makeinfo
@@ -368,7 +368,8 @@ minerd_SOURCES = elist.h miner.h compat.h \
 		  cpu-miner.c util.c \
 		  sha2.c sha2-arm.S sha2-x86.S sha2-x64.S \
 		  scrypt.c scrypt-arm.S scrypt-x86.S scrypt-x64.S \
-		  blake.c groestl.c jh.c keccak.c skein.c ziftr.c
+		  keccak.c blake.c groestl.c jh.c skein.c\
+		  ziftr.c
 
 minerd_LDFLAGS = $(PTHREAD_FLAGS)
 minerd_LDADD = -lcurl -ljansson -lpthread 
@@ -664,6 +665,20 @@ minerd-scrypt.obj: scrypt.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-scrypt.obj `if test -f 'scrypt.c'; then $(CYGPATH_W) 'scrypt.c'; else $(CYGPATH_W) '$(srcdir)/scrypt.c'; fi`
 
+minerd-keccak.o: keccak.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-keccak.o -MD -MP -MF $(DEPDIR)/minerd-keccak.Tpo -c -o minerd-keccak.o `test -f 'keccak.c' || echo '$(srcdir)/'`keccak.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-keccak.Tpo $(DEPDIR)/minerd-keccak.Po
+#	$(AM_V_CC)source='keccak.c' object='minerd-keccak.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-keccak.o `test -f 'keccak.c' || echo '$(srcdir)/'`keccak.c
+
+minerd-keccak.obj: keccak.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-keccak.obj -MD -MP -MF $(DEPDIR)/minerd-keccak.Tpo -c -o minerd-keccak.obj `if test -f 'keccak.c'; then $(CYGPATH_W) 'keccak.c'; else $(CYGPATH_W) '$(srcdir)/keccak.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-keccak.Tpo $(DEPDIR)/minerd-keccak.Po
+#	$(AM_V_CC)source='keccak.c' object='minerd-keccak.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-keccak.obj `if test -f 'keccak.c'; then $(CYGPATH_W) 'keccak.c'; else $(CYGPATH_W) '$(srcdir)/keccak.c'; fi`
+
 minerd-blake.o: blake.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.o -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.o `test -f 'blake.c' || echo '$(srcdir)/'`blake.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
@@ -705,20 +720,6 @@ minerd-jh.obj: jh.c
 #	$(AM_V_CC)source='jh.c' object='minerd-jh.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-jh.obj `if test -f 'jh.c'; then $(CYGPATH_W) 'jh.c'; else $(CYGPATH_W) '$(srcdir)/jh.c'; fi`
-
-minerd-keccak.o: keccak.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-keccak.o -MD -MP -MF $(DEPDIR)/minerd-keccak.Tpo -c -o minerd-keccak.o `test -f 'keccak.c' || echo '$(srcdir)/'`keccak.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-keccak.Tpo $(DEPDIR)/minerd-keccak.Po
-#	$(AM_V_CC)source='keccak.c' object='minerd-keccak.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-keccak.o `test -f 'keccak.c' || echo '$(srcdir)/'`keccak.c
-
-minerd-keccak.obj: keccak.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-keccak.obj -MD -MP -MF $(DEPDIR)/minerd-keccak.Tpo -c -o minerd-keccak.obj `if test -f 'keccak.c'; then $(CYGPATH_W) 'keccak.c'; else $(CYGPATH_W) '$(srcdir)/keccak.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-keccak.Tpo $(DEPDIR)/minerd-keccak.Po
-#	$(AM_V_CC)source='keccak.c' object='minerd-keccak.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-keccak.obj `if test -f 'keccak.c'; then $(CYGPATH_W) 'keccak.c'; else $(CYGPATH_W) '$(srcdir)/keccak.c'; fi`
 
 minerd-skein.o: skein.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-skein.o -MD -MP -MF $(DEPDIR)/minerd-skein.Tpo -c -o minerd-skein.o `test -f 'skein.c' || echo '$(srcdir)/'`skein.c
