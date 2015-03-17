@@ -38,9 +38,11 @@
 #include <string.h>
 #include <stdint.h>
 
-#define USE_SPH_KECCAK 1  // Don't comment this out unless fixed for 80 byte input
+#define USE_SPH_KECCAK 1     // Don't comment this out unless fixed for 80 byte input
 // #define USE_SPH_BLAKE 1   // Works
-#define USE_SPH_GROESTL 1 // Works on windows
+#if !defined(_WIN32) && !defined(_WIN64)
+#define USE_SPH_GROESTL 1    // Works on windows (can comment this out on windows)
+#endif
 // #define USE_SPH_JH 1      // Works
 // #define USE_SPH_SKEIN 1   // Works
 
@@ -158,6 +160,7 @@ static void ziftrhash(void *state, const void *input)
     // I believe this is optimized for 64 length input,
     // so probably won't work for zrc, since we use
     // input of length 80 here
+    int i;
     DECL_KEC;
     KEC_I;
     KEC_U;
