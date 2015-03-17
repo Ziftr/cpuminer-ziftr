@@ -1,0 +1,194 @@
+
+Guide to Setting up MinGW on Windows and Compiling CPU Miner
+
+1. Get the mingw installer from the official sourceforge repo.
+http://sourceforge.net/projects/mingw/files/Installer/mingw-get-setup.exe/download
+
+2. Run the installer, installing to the default directory C:\MinGW
+
+
+3. After the installer finishes downloaded the needed packages.
+	We want to use mingw64, which is a branch from mingw that isn't officially supported. To do this we need msys and some basic dev tools from 32 bit mingw.
+	Click continue to launch the MinGW Installer Manager.
+	Under "Basic Setup" click the box for mingw-developer-toolkit and select "mark for installation". This should also mark msys-base.
+	Click the Installation menu from the toolbar and select apply changes.
+	When the confirmation window opens, click apply. This will begin downloading the packages needed.
+
+	When the base dev tools are finished downloading go back to the Installation Manager.
+	Click "All Packages" to view all possible packages. Install the following packages (mark for install then apply). Note that there are multiple selections for bin, doc, and lic. You need binaries (bin), documentation and licenses are optional.
+	- msys-rxvt 
+	- msys-unzip 
+	- msys-wget 
+	- msys-zip 
+
+	When finished you can close the Installation Manager
+
+
+4. Set up MSYS Shell shortcut.
+	Navigate to the msys folder whould should be at C:\MinGW\msys\1.0
+	Right-click and drag the msys.bat file to the desktop (or anywhere convenient) and select "create shortcut".
+	Right-click the shortcut and select properties.
+		Change target to:  C:\MinGW\msys\1.0\msys.bat -rxvt
+		Change Start in to:  C:\MinGW\msys\1.0\bin
+	You can optionally change the name of the shortcut and use the included icon.
+	Double click the shortcut to launch msys shell.
+
+
+5. Get the packages for mingw64.
+	Right now we're setup to use 32 bit mingw, but that's not what we want.
+	Navigate to C:\MinGW
+		Rename mingw32 to mingw.dist. (this is the old stuff we don't need anymore)
+		Create a new folder named mingw32.
+		Create a new folder named mingw64.
+	Download the official MinGW 64 package installer from:
+	http://win-builds.org/doku.php/download_and_installation_from_windows
+
+	Run the package installer. Select "native windows" and x86_64. Browse to the newly created ming64 folder C:\MinGW\mingw64. Click OK.
+	This will bring up a list of all packages for mingw64. The default setting is to install them all, so just click "Process" button in upper right hand corner to download and install them.
+
+	When that finishes, close the package installer, then run it again.
+	This time select i686 as the architecture and browse the mingw32 folder.
+	Click OK and Process to install for 32 bit builds.
+
+
+6. Setup directories using MSYS Shell.
+	We need to setup folders for building and sources, and mount directories for mingw.
+	From the MSYS Shell commandline enter the following (note shift-insert to paste).
+		mount 'C:\MinGW\mingw32\' /mingw32
+		mount 'C:\MinGW\mingw64\' /mingw64
+		mkdir /c/mingw/{opt,build32,local32,build64,local64,sources}
+		umount /mingw
+		mount 'C:\MinGW' /mingw
+		mount 'C:\MinGW\opt\' /opt
+		mount 'C:\MinGW\local32\' /local32
+		mount 'C:\MinGW\build32\' /build32
+		mount 'C:\MinGW\local64\' /local64
+		mount 'C:\MinGW\build64\' /build64
+		mount 'C:\MinGW\sources\' /sources
+		mkdir /opt/bin /local{32,64}/{bin,etc,include,lib,share}
+		mkdir /local{32,64}/lib/pkgconfig
+
+	Create profile.local files (Make sure windows isn't hiding file extensions):
+		Navigate to C:\MinGW\local32\etc
+		Create a new text file named profile.local.
+		Paste the following into the file:
+
+#
+# /local32/etc/profile.local
+#
+
+alias dir='ls -la --color=auto'
+alias ls='ls --color=auto'
+
+PKG_CONFIG_PATH="/local32/lib/pkgconfig"
+CPPFLAGS="-I/local32/include"
+CFLAGS="-I/local32/include -mms-bitfields -mthreads -mtune=pentium3"
+CXXFLAGS="-I/local32/include -mms-bitfields -mthreads -mtune=pentium3"
+LDFLAGS="-L/local32/lib -mthreads"
+export PKG_CONFIG_PATH CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+
+PATH=".:/local32/bin:/mingw32/bin:/mingw/bin:/bin:/opt/bin"
+PS1='\[\033[32m\]\u@\h \[\033[33m\w\033[0m\]$ '
+export PATH PS1
+
+# directory where sources will be downloaded
+LOCALSOURCEDIR=/sources
+# package build directory
+LOCALBUILDDIR=/build32
+# package installation prefix
+LOCALDESTDIR=/local32
+export LOCALBUILDDIR LOCALDESTDIR
+
+
+
+
+		Now navigate to C:\MinGW\local64\etc and create a profile.local file.
+		Paste the following:
+
+
+
+#
+# /local64/etc/profile.local
+#
+
+alias dir='ls -la --color=auto'
+alias ls='ls --color=auto'
+
+PKG_CONFIG_PATH="/local64/lib/pkgconfig"
+CPPFLAGS="-I/local64/include"
+CFLAGS="-I/local64/include -mms-bitfields -mthreads"
+CXXFLAGS="-I/local64/include -mms-bitfields -mthreads"
+LDFLAGS="-L/local64/lib"
+export PKG_CONFIG_PATH CPPFLAGS CFLAGS CXXFLAGS LDFLAGS
+
+PATH=".:/local64/bin:/mingw64/bin:/mingw/bin:/bin:/opt/bin"
+PS1='\[\033[32m\]\u@\h \[\033[33m\w\033[0m\]$ '
+export PATH PS1
+
+# directory where sources will be downloaded
+LOCALSOURCEDIR=/sources
+# package build directory
+LOCALBUILDDIR=/build64
+# package installation prefix
+LOCALDESTDIR=/local64
+export LOCALBUILDDIR LOCALDESTDIR
+
+
+
+
+	Now set it up so that these profiles are executed at login.
+	Paste the following (one line at a time) into shell:
+	cat >> /etc/profile << "EOF"
+	if [ -f /local64/etc/profile.local ]; then
+        	source /local64/etc/profile.local
+	fi
+
+	EOF
+	
+
+	Now activate 64 bit. Paste to shell:
+		source /local64/etc/profile.local
+
+	You can swap to 32 bit by using:
+		source /local32/etc/profile.local
+
+
+7. Download the CPU Miner source from Github
+	The source can be put in either
+		C:\MinGW\msys\1.0\home\<user>
+	or
+		C:\MinGW\sources
+
+
+8. Download the latest version of curl (requires 7zip).
+	http://curl.haxx.se/download.html
+
+	Note you want the version for Win64 - MinGW64, devel.
+	Extract the 7z file somewhere.
+	From the extracted folder, copy bin, include, and lib64 folders to the mingw64 folder (C:\MinGW\mingw64). If asked to replace files, so no (skip them). It seems mingw64 comes with the latest, so only copy over the libcurl files actually needed.
+
+	You'll need to do the same for 32 bit version.
+	Download the version under Win32 - Generic, Win32 2000/XP zip 7.40.0 libcurl SSL  
+	
+
+9. Compile it!
+	In the MSYS shell, navigate to the folder where cpu miner is located (step 7).
+		Enter these commands into shell:
+		./autogen.sh
+		LIBCURL="-lcurldll" ./configure CFLAGS="-O3" LDFLAGS="-static"
+		make
+
+	If there is an error about "conflicting types for 'sleep'," simply comment out the offending method. In the cpu miner source folder, find compat.h. Open it and comment out the entire sleep method. Save it and close it. Try the build again.
+
+
+10. Gather executable and required libraries and start mining (or package it all up).
+	minerd.exe should be in the root folder of the git project
+	Since the libraries aren't linked statically it will need copies of the .dll files in a directory to run. The .dll files can be found in C:\MinGW\mingw64\bin
+	It needs:
+		libcurl.dll
+		libeay32.dll
+		libjansson-4.dll
+		libwinpthread-1.dll
+		ssleay32.dll
+		zlib1.dll
+	
