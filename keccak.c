@@ -1568,6 +1568,8 @@ keccak_init(sph_keccak_context *kc, unsigned out_size)
 static void
 keccak_core(sph_keccak_context *kc, const void *data, size_t len, size_t lim)
 {
+	// lim = 72
+	// len = 80
 	unsigned char *buf;
 	size_t ptr;
 	DECL_STATE
