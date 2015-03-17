@@ -160,7 +160,7 @@ static void ziftrhash(void *state, const void *input)
     // I believe this is optimized for 64 length input,
     // so probably won't work for zrc, since we use
     // input of length 80 here
-    int i;
+    int i; 
     DECL_KEC;
     KEC_I;
     KEC_U;
