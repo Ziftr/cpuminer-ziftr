@@ -1080,12 +1080,13 @@ static void parse_arg (int key, char *arg)
 	switch(key) {
 	case 'a':
 		// -a zr5 and -a ziftr both work
+		i = 0;
 		if (!strcmp(arg, "zr5")) {
 			opt_algo = ALGO_ZIFTR;
 		}
 		else
 		{
-			for (i = 0; i < ARRAY_SIZE(algo_names); i++) {
+			for (; i < ARRAY_SIZE(algo_names); i++) {
 				if (algo_names[i] && !strcmp(arg, algo_names[i])) {
 					opt_algo = i;
 					break;
