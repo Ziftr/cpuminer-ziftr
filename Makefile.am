@@ -19,7 +19,7 @@ minerd_SOURCES	= elist.h miner.h compat.h \
 		  cpu-miner.c util.c \
 		  sha2.c sha2-arm.S sha2-x86.S sha2-x64.S \
 		  scrypt.c scrypt-arm.S scrypt-x86.S scrypt-x64.S \
-		  keccak.c blake.c groestl.c jh.c skein.c\
+		  keccak.c groestl.c jh.c blake.c skein.c \
 		  ziftr.c
 
 minerd_LDFLAGS	= $(PTHREAD_FLAGS)

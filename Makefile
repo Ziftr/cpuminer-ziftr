@@ -111,8 +111,8 @@ am_minerd_OBJECTS = minerd-cpu-miner.$(OBJEXT) minerd-util.$(OBJEXT) \
 	minerd-sha2-x86.$(OBJEXT) minerd-sha2-x64.$(OBJEXT) \
 	minerd-scrypt.$(OBJEXT) minerd-scrypt-arm.$(OBJEXT) \
 	minerd-scrypt-x86.$(OBJEXT) minerd-scrypt-x64.$(OBJEXT) \
-	minerd-keccak.$(OBJEXT) minerd-blake.$(OBJEXT) \
-	minerd-groestl.$(OBJEXT) minerd-jh.$(OBJEXT) \
+	minerd-keccak.$(OBJEXT) minerd-groestl.$(OBJEXT) \
+	minerd-jh.$(OBJEXT) minerd-blake.$(OBJEXT) \
 	minerd-skein.$(OBJEXT) minerd-ziftr.$(OBJEXT)
 minerd_OBJECTS = $(am_minerd_OBJECTS)
 minerd_DEPENDENCIES =
@@ -368,7 +368,7 @@ minerd_SOURCES = elist.h miner.h compat.h \
 		  cpu-miner.c util.c \
 		  sha2.c sha2-arm.S sha2-x86.S sha2-x64.S \
 		  scrypt.c scrypt-arm.S scrypt-x86.S scrypt-x64.S \
-		  keccak.c blake.c groestl.c jh.c skein.c\
+		  keccak.c groestl.c jh.c blake.c skein.c \
 		  ziftr.c
 
 minerd_LDFLAGS = $(PTHREAD_FLAGS)
@@ -679,20 +679,6 @@ minerd-keccak.obj: keccak.c
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-keccak.obj `if test -f 'keccak.c'; then $(CYGPATH_W) 'keccak.c'; else $(CYGPATH_W) '$(srcdir)/keccak.c'; fi`
 
-minerd-blake.o: blake.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.o -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.o `test -f 'blake.c' || echo '$(srcdir)/'`blake.c
-	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
-#	$(AM_V_CC)source='blake.c' object='minerd-blake.o' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.o `test -f 'blake.c' || echo '$(srcdir)/'`blake.c
-
-minerd-blake.obj: blake.c
-	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.obj -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.obj `if test -f 'blake.c'; then $(CYGPATH_W) 'blake.c'; else $(CYGPATH_W) '$(srcdir)/blake.c'; fi`
-	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
-#	$(AM_V_CC)source='blake.c' object='minerd-blake.obj' libtool=no \
-#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.obj `if test -f 'blake.c'; then $(CYGPATH_W) 'blake.c'; else $(CYGPATH_W) '$(srcdir)/blake.c'; fi`
-
 minerd-groestl.o: groestl.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-groestl.o -MD -MP -MF $(DEPDIR)/minerd-groestl.Tpo -c -o minerd-groestl.o `test -f 'groestl.c' || echo '$(srcdir)/'`groestl.c
 	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-groestl.Tpo $(DEPDIR)/minerd-groestl.Po
@@ -720,6 +706,20 @@ minerd-jh.obj: jh.c
 #	$(AM_V_CC)source='jh.c' object='minerd-jh.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-jh.obj `if test -f 'jh.c'; then $(CYGPATH_W) 'jh.c'; else $(CYGPATH_W) '$(srcdir)/jh.c'; fi`
+
+minerd-blake.o: blake.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.o -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.o `test -f 'blake.c' || echo '$(srcdir)/'`blake.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
+#	$(AM_V_CC)source='blake.c' object='minerd-blake.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.o `test -f 'blake.c' || echo '$(srcdir)/'`blake.c
+
+minerd-blake.obj: blake.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-blake.obj -MD -MP -MF $(DEPDIR)/minerd-blake.Tpo -c -o minerd-blake.obj `if test -f 'blake.c'; then $(CYGPATH_W) 'blake.c'; else $(CYGPATH_W) '$(srcdir)/blake.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-blake.Tpo $(DEPDIR)/minerd-blake.Po
+#	$(AM_V_CC)source='blake.c' object='minerd-blake.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-blake.obj `if test -f 'blake.c'; then $(CYGPATH_W) 'blake.c'; else $(CYGPATH_W) '$(srcdir)/blake.c'; fi`
 
 minerd-skein.o: skein.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-skein.o -MD -MP -MF $(DEPDIR)/minerd-skein.Tpo -c -o minerd-skein.o `test -f 'skein.c' || echo '$(srcdir)/'`skein.c
