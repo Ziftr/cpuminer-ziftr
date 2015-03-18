@@ -143,7 +143,7 @@ static void ziftrhash(void *state, const void *input)
 #ifdef USE_SPH_GROESTL
     sph_groestl512_context   ctx_groestl;
 #elif defined(AES_NI_GR)
-    DATA_ALIGN16(unsigned char tmp[128]);
+    // DATA_ALIGN16(unsigned char tmp[128]);
     // hashState_groestl groestl;
     // init_groestl(&groestl);
 #else
@@ -206,8 +206,8 @@ static void ziftrhash(void *state, const void *input)
             sph_groestl512 (&ctx_groestl, (&hash), 64);
             sph_groestl512_close(&ctx_groestl, (&hash));
 #elif defined(AES_NI_GR)
-            hash_groestl(512, hash, 64 << 3, tmp);
-            memcpy(hash, tmp, 64);
+            hash_groestl(512, hash, 64 << 3, hash);
+            // memcpy(hash, tmp, 64);
             // update_groestl(&groestl, (unsigned char*)hash, 512);
             // final_groestl(&groestl, (unsigned char*)hash);
 #else
