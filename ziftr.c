@@ -143,8 +143,9 @@ static void ziftrhash(void *state, const void *input)
 #ifdef USE_SPH_GROESTL
     sph_groestl512_context   ctx_groestl;
 #elif defined(AES_NI_GR)
-    hashState_groestl groestl;
-    init_groestl(&groestl);
+    DATA_ALIGN16(unsigned char tmp[128]);
+    // hashState_groestl groestl;
+    // init_groestl(&groestl);
 #else
     grsoState sts_grs;
 #endif
@@ -205,8 +206,10 @@ static void ziftrhash(void *state, const void *input)
             sph_groestl512 (&ctx_groestl, (&hash), 64);
             sph_groestl512_close(&ctx_groestl, (&hash));
 #elif defined(AES_NI_GR)
-            update_groestl(&groestl, (unsigned char*)hash, 512);
-            final_groestl(&groestl, (unsigned char*)hash);
+            hash_groestl(512, hash, 64 << 3, tmp);
+            memcpy(hash, tmp, 64);
+            // update_groestl(&groestl, (unsigned char*)hash, 512);
+            // final_groestl(&groestl, (unsigned char*)hash);
 #else
         {
             GRS_I; // init
@@ -248,7 +251,7 @@ static void ziftrhash(void *state, const void *input)
         }
     }
 
-#ifndef USE_SPH_GROESTL
+#if !defined(USE_SPH_GROESTL) && !defined(AES_NI_GR)
     asm volatile ("emms");
 #endif
 	memcpy(state, hash, 32);
