@@ -180,9 +180,9 @@ AWK = awk
 CC = gcc
 CCAS = gcc
 CCASDEPMODE = depmode=gcc3
-CCASFLAGS = -O3
+CCASFLAGS = -O3 -msse4.1 -march=native
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3
+CFLAGS = -O3 -msse4.1 -march=native
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo

@@ -38,13 +38,14 @@
 #include <string.h>
 #include <stdint.h>
 
-#define USE_SPH_KECCAK 1     // Don't comment this out unless fixed for 80 byte input
-// #define USE_SPH_BLAKE 1   // Works
-#if !defined(_WIN32) && !defined(_WIN64)
-#define USE_SPH_GROESTL 1    // Works on windows (can comment this out on windows)
-#endif
-// #define USE_SPH_JH 1      // Works
-// #define USE_SPH_SKEIN 1   // Works
+#define USE_SPH_KECCAK     // Don't comment this out unless fixed for 80 byte input
+// #define USE_SPH_BLAKE   // Works
+// #if !defined(_WIN32) && !defined(_WIN64)
+// #define USE_SPH_GROESTL    // Works on windows (can comment this out on windows)
+#define AES_NI_GR
+// #endif
+// #define USE_SPH_JH      // Works
+// #define USE_SPH_SKEIN   // Works
 
 #ifdef USE_SPH_KECCAK
 #include "sph_keccak.h"
@@ -60,6 +61,8 @@
 
 #ifdef USE_SPH_GROESTL
 #include "sph_groestl.h"
+#elif defined(AES_NI_GR)
+#include "algos/groestl/hash-groestl.h"
 #else
 #include "algos/grso.c"
 #include "algos/grso-asm.c"
@@ -139,6 +142,9 @@ static void ziftrhash(void *state, const void *input)
 
 #ifdef USE_SPH_GROESTL
     sph_groestl512_context   ctx_groestl;
+#elif defined(AES_NI_GR)
+    hashState_groestl groestl;
+    init_groestl(&groestl);
 #else
     grsoState sts_grs;
 #endif
@@ -183,6 +189,7 @@ static void ziftrhash(void *state, const void *input)
             sph_blake512 (&ctx_blake, (&hash), 64);
             sph_blake512_close(&ctx_blake, (&hash));
 #else
+
         {
             DECL_BLK;
             BLK_I;
@@ -197,6 +204,9 @@ static void ziftrhash(void *state, const void *input)
             sph_groestl512_init(&ctx_groestl);
             sph_groestl512 (&ctx_groestl, (&hash), 64);
             sph_groestl512_close(&ctx_groestl, (&hash));
+#elif defined(AES_NI_GR)
+            update_groestl(&groestl, (unsigned char*)hash, 512);
+            final_groestl(&groestl, (unsigned char*)hash);
 #else
         {
             GRS_I; // init

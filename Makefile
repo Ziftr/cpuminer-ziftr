@@ -113,7 +113,8 @@ am_minerd_OBJECTS = minerd-cpu-miner.$(OBJEXT) minerd-util.$(OBJEXT) \
 	minerd-scrypt-x86.$(OBJEXT) minerd-scrypt-x64.$(OBJEXT) \
 	minerd-keccak.$(OBJEXT) minerd-groestl.$(OBJEXT) \
 	minerd-jh.$(OBJEXT) minerd-blake.$(OBJEXT) \
-	minerd-skein.$(OBJEXT) minerd-ziftr.$(OBJEXT)
+	minerd-skein.$(OBJEXT) minerd-hash-groestl.$(OBJEXT) \
+	minerd-ziftr.$(OBJEXT)
 minerd_OBJECTS = $(am_minerd_OBJECTS)
 minerd_DEPENDENCIES =
 minerd_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(minerd_LDFLAGS) \
@@ -257,9 +258,9 @@ AWK = awk
 CC = gcc
 CCAS = gcc
 CCASDEPMODE = depmode=gcc3
-CCASFLAGS = -O3
+CCASFLAGS = -O3 -msse4.1 -march=native
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O3
+CFLAGS = -O3 -msse4.1 -march=native
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -369,6 +370,7 @@ minerd_SOURCES = elist.h miner.h compat.h \
 		  sha2.c sha2-arm.S sha2-x86.S sha2-x64.S \
 		  scrypt.c scrypt-arm.S scrypt-x86.S scrypt-x64.S \
 		  keccak.c groestl.c jh.c blake.c skein.c \
+		  algos/groestl/hash-groestl.c \
 		  ziftr.c
 
 minerd_LDFLAGS = $(PTHREAD_FLAGS)
@@ -483,6 +485,7 @@ distclean-compile:
 include ./$(DEPDIR)/minerd-blake.Po
 include ./$(DEPDIR)/minerd-cpu-miner.Po
 include ./$(DEPDIR)/minerd-groestl.Po
+include ./$(DEPDIR)/minerd-hash-groestl.Po
 include ./$(DEPDIR)/minerd-jh.Po
 include ./$(DEPDIR)/minerd-keccak.Po
 include ./$(DEPDIR)/minerd-scrypt-arm.Po
@@ -734,6 +737,20 @@ minerd-skein.obj: skein.c
 #	$(AM_V_CC)source='skein.c' object='minerd-skein.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-skein.obj `if test -f 'skein.c'; then $(CYGPATH_W) 'skein.c'; else $(CYGPATH_W) '$(srcdir)/skein.c'; fi`
+
+minerd-hash-groestl.o: algos/groestl/hash-groestl.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash-groestl.o -MD -MP -MF $(DEPDIR)/minerd-hash-groestl.Tpo -c -o minerd-hash-groestl.o `test -f 'algos/groestl/hash-groestl.c' || echo '$(srcdir)/'`algos/groestl/hash-groestl.c
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash-groestl.Tpo $(DEPDIR)/minerd-hash-groestl.Po
+#	$(AM_V_CC)source='algos/groestl/hash-groestl.c' object='minerd-hash-groestl.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash-groestl.o `test -f 'algos/groestl/hash-groestl.c' || echo '$(srcdir)/'`algos/groestl/hash-groestl.c
+
+minerd-hash-groestl.obj: algos/groestl/hash-groestl.c
+	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-hash-groestl.obj -MD -MP -MF $(DEPDIR)/minerd-hash-groestl.Tpo -c -o minerd-hash-groestl.obj `if test -f 'algos/groestl/hash-groestl.c'; then $(CYGPATH_W) 'algos/groestl/hash-groestl.c'; else $(CYGPATH_W) '$(srcdir)/algos/groestl/hash-groestl.c'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/minerd-hash-groestl.Tpo $(DEPDIR)/minerd-hash-groestl.Po
+#	$(AM_V_CC)source='algos/groestl/hash-groestl.c' object='minerd-hash-groestl.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o minerd-hash-groestl.obj `if test -f 'algos/groestl/hash-groestl.c'; then $(CYGPATH_W) 'algos/groestl/hash-groestl.c'; else $(CYGPATH_W) '$(srcdir)/algos/groestl/hash-groestl.c'; fi`
 
 minerd-ziftr.o: ziftr.c
 	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(minerd_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT minerd-ziftr.o -MD -MP -MF $(DEPDIR)/minerd-ziftr.Tpo -c -o minerd-ziftr.o `test -f 'ziftr.c' || echo '$(srcdir)/'`ziftr.c

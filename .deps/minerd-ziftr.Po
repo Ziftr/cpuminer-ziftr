@@ -81,7 +81,8 @@ minerd-ziftr.o: ziftr.c cpuminer-config.h miner.h \
   /usr/include/syslog.h /usr/include/sys/syslog.h /usr/include/string.h \
   /usr/include/strings.h /usr/include/secure/_string.h sph_keccak.h \
   sph_types.h algos/blake.c algos/sph_blake.h algos/sph_types.h \
-  sph_groestl.h algos/jh_sse2_opt64.h \
+  algos/groestl/hash-groestl.h algos/groestl/brg_endian.h \
+  algos/groestl/brg_types.h algos/jh_sse2_opt64.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/emmintrin.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/xmmintrin.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/6.0/include/mmintrin.h \
@@ -376,7 +377,11 @@ algos/sph_blake.h:
 
 algos/sph_types.h:
 
-sph_groestl.h:
+algos/groestl/hash-groestl.h:
+
+algos/groestl/brg_endian.h:
+
+algos/groestl/brg_types.h:
 
 algos/jh_sse2_opt64.h:
 
