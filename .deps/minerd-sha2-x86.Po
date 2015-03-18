@@ -1,3 +1,0 @@
-minerd-sha2-x86.o: sha2-x86.S cpuminer-config.h
-
-cpuminer-config.h:

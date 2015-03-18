@@ -243,14 +243,27 @@ HashReturn_gr hash_groestl(int hashbitlen,
 
   /* initialise */
   if ((ret = init_groestl(&context)) != SUCCESS_GR)
+  {
+    printf("\n1asdf\n");
     return ret;
+  }
+    
 
   /* process message */
   if ((ret = update_groestl(&context, data, databitlen)) != SUCCESS_GR)
+  {
+    printf("\n2asdf\n");
     return ret;
+  }
+    
 
   /* finalise */
   ret = final_groestl(&context, hashval);
+
+  if (ret != SUCCESS_GR)
+  {
+    printf("\n3asdf\n");
+  }
 
   return ret;
 }
